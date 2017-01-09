@@ -95,17 +95,6 @@ def build_node(raw_node):
 
     raw_node = raw_node.strip('\n')
     
-    #node_elements = raw_node.split(',')
-
-    #for idx, val in enumerate(node_elements):
-    #    if type(val) is str:
-    #        node_elements[idx] = val.strip('"')
-
-    ## todo handle commas within quotes, for now tossing
-    #if len(node_elements) != 7:
-    #    print(node_elements)
-    #    return
-
     # the following code is a result of commas being in the midst of
     # the csv strings themselves so a simple split on comma did not work
     elements = []
@@ -132,10 +121,11 @@ def build_node(raw_node):
             'SiteNWISURL': elements[6]
             }
     refined_node = {
-            'node_name': elements[1],
-            'node_x': float(elements[4]),
-            'node_y': float(elements[5]),
-            'node_description': str(description)
+            'name': elements[1],
+            'x': float(elements[4]),
+            'y': float(elements[5]),
+            'description': [], # todo replace str(description),
+            'attributes' : [],
             }
 
     return refined_node
@@ -157,9 +147,9 @@ def build_scenarios(scenario=None):
     return scenario
 
 
-def create_network(conn, project, network):
+def create_network(conn, network):
 
-    pass
+    return conn.call('add_network', {'net':network})
 
 
 if __name__ == '__main__':
@@ -173,7 +163,9 @@ if __name__ == '__main__':
     node_list = read_csv_body(fh)
     conn = create_connection()
     session_id = get_session_id(conn)
+
     project_info = create_project(conn)
     network = build_network(project_info, projection, node_list, None)
     network_info = create_network(conn, network)
+    print(network_info)
 
